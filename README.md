@@ -46,14 +46,14 @@ The application must provide APIs for the following. Fill in the API contract fo
 
 | # | Description | Method | Endpoint | Path / Query Params | Request Body | Response Body | Status Codes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Register a package | | | | | | |
-| 2 | Get the details of a specific package | | | | | | |
-| 3 | Partially update package details | | | | | | |
-| 4 | Delete a package (only if it has not been dispatched) | | | | | | |
-| 5 | Search and filter packages (by destination, status, arrival date) | | | | | | |
-| 6 | View dispatch batches (filter by destination, vehicle, dispatch status) | | | | | | |
-| 7 | Get warehouse statistics (dispatch summary) | | | | | | |
-| 8 | Add data manually (e.g. create a dispatch batch and assign packages) | | | | | | |
+| 1 | Register a package |Post |/packages | | | | |
+| 2 | Get the details of a specific package |Get |/packages/{package_id} | | | | |
+| 3 | Partially update package details |Patch |/packages/{package_id} { | | | | |
+| 4 | Delete a package (only if it has not been dispatched) |Delete ||/packages/{package_id}  | | | | |
+| 5 | Search and filter packages (by destination, status, arrival date) |Get |/packages | | | | |
+| 6 | View dispatch batches (filter by destination, vehicle, dispatch status) |Get |/dispatch-batches | | | | |
+| 7 | Get warehouse statistics (dispatch summary) |Get |analytics/dispatch-summary  | | | | |
+| 8 | Add data manually (e.g. create a dispatch batch and assign packages) |Post |/dispatch-batches  | | | | |
 
 > **Your task:** Complete the table before you start building. For each API, decide the HTTP method, endpoint path, path and query parameters, request body, response body, and status codes — including error cases (e.g. package not found, deleting a dispatched package).
 
