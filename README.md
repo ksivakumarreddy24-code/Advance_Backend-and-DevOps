@@ -46,14 +46,14 @@ The application must provide APIs for the following. Fill in the API contract fo
 
 | # | Description | Method | Endpoint | Path / Query Params | Request Body | Response Body | Status Codes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Register a package |Post |/packages | | | | |
-| 2 | Get the details of a specific package |Get |/packages/{package_id} | | | | |
-| 3 | Partially update package details |Patch |/packages/{package_id}  | | | | |
-| 4 | Delete a package (only if it has not been dispatched) |Delete |/packages/{package_id}  | | | | |
-| 5 | Search and filter packages (by destination, status, arrival date) |Get |/packages | | | | |
-| 6 | View dispatch batches (filter by destination, vehicle, dispatch status) |Get |/dispatch-batches | | | | |
-| 7 | Get warehouse statistics (dispatch summary) |Get |analytics/dispatch-summary  | | | | |
-| 8 | Add data manually (e.g. create a dispatch batch and assign packages) |Post |/dispatch-batches  | | | | |
+| 1 | Register a package |Post |/packages |None |package details |create package details |201 |
+| 2 | Get the details of a specific package |Get |/packages/{package_id} |package_id |None | package details|200 |
+| 3 | Partially update package details |Patch |/packages/{package_id}  |package_id |Update of Package |update package details |201 |
+| 4 | Delete a package (only if it has not been dispatched) |Delete |/packages/{package_id}  |package_id |None |success message |200 |
+| 5 | Search and filter packages (by destination, status, arrival date) |Get |/packages |destination,status,arrival_date |None |list of packages | 200|
+| 6 | View dispatch batches (filter by destination, vehicle, dispatch status) |Get |/dispatch-batches |destination,vehicle,status |None |dispatch details |200 |
+| 7 | Get warehouse statistics (dispatch summary) |Get |analytics/dispatch-summary  |None |None |dispatch details |200 |
+| 8 | Add data manually (e.g. create a dispatch batch and assign packages) |Post |/dispatch-batches  |None |vehicle,destination,package_id |create batch details |201 |
 
 > **Your task:** Complete the table before you start building. For each API, decide the HTTP method, endpoint path, path and query parameters, request body, response body, and status codes — including error cases (e.g. package not found, deleting a dispatched package).
 
