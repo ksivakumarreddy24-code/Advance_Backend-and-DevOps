@@ -1,85 +1,142 @@
-# Advance_Backend-and-DevOps
-## 1. Problem Statement
+# Todo List API
 
-A logistics company operates a warehouse where packages arrive from different sources and need to be dispatched to various destinations.
+A small FastAPI service for a todo list, stored in a local SQLite database.
+You can create todos, list them all, update them and delete them.
 
-Warehouse staff need to organize packages, track their current status, and group them into dispatch batches before assigning them to delivery vehicles.
+## Project structure
 
-Currently, these operations are handled manually, making it difficult to track pending packages, manage dispatches, and monitor warehouse activity.
+```text
+todo-list/
+├── main.py            # FastAPI app, request/response models and routes
+├── functions.py       # SQLite connection, Todo table and the CRUD functions
+└── requirements.txt
+```
 
-The goal is to build a **Warehouse Dispatch Management System** that simplifies package management and provides visibility into warehouse dispatch operations.
+The database file `todo.db` is created automatically next to `main.py` the first time the app starts.
 
-## 2. Objectives
+## Setup & Run
 
-- Register and maintain package details.
-- Track the status of packages inside the warehouse.
-- Search and filter packages based on different criteria.
-- Organize packages into dispatch batches.
-- View dispatch information and warehouse statistics.
+### 1. Clone the repository
 
-## 3. Functional Requirements
+```bash
+git clone https://github.com/malnadhudga/todo-list.git
+cd todo-list
+```
 
-### Package Management
+### 2. Create and activate a virtual environment
 
-- Register a new package with details such as package name, destination, weight, arrival date and status.
-- View the details of a specific package.
-- Update package information partially.
-- Delete a package if it has not yet been dispatched.
-- Retrieve packages using filters such as destination, status and arrival date.
+Create the venv:
 
-### Dispatch Management
+```bash
+python -m venv venv
+```
 
-- View dispatch batches with filters such as destination, vehicle and dispatch status.
+Activate it (pick your terminal):
 
-### Warehouse Analytics
+**Windows – PowerShell**
+```powershell
+venv\Scripts\Activate.ps1
+```
+> If PowerShell says running scripts is disabled, run this once, then activate again:
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+> ```
 
-Generate a dispatch summary containing:
+**Windows – Command Prompt (cmd)**
+```cmd
+venv\Scripts\activate.bat
+```
 
-- Total packages received.
-- Total packages pending dispatch.
-- Total packages dispatched.
-- Destination-wise package count.
+**macOS / Linux**
+```bash
+source venv/bin/activate
+```
 
-## 4. API Requirements
+When it's active you'll see `(venv)` at the start of your terminal prompt. To leave it later, run `deactivate`.
 
-The application must provide APIs for the following. Fill in the API contract for each row.
+### 3. Install the requirements
 
-| # | Description | Method | Endpoint | Path / Query Params | Request Body | Response Body | Status Codes |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Register a package |Post |/packages |None |package details |create package details |201 |
-| 2 | Get the details of a specific package |Get |/packages/{package_id} |package_id |None | package details|200 |
-| 3 | Partially update package details |Patch |/packages/{package_id}  |package_id |Update of Package |update package details |201 |
-| 4 | Delete a package (only if it has not been dispatched) |Delete |/packages/{package_id}  |package_id |None |success message |200 |
-| 5 | Search and filter packages (by destination, status, arrival date) |Get |/packages |destination,status,arrival_date |None |list of packages | 200|
-| 6 | View dispatch batches (filter by destination, vehicle, dispatch status) |Get |/dispatch-batches |destination,vehicle,status |None |dispatch details |200 |
-| 7 | Get warehouse statistics (dispatch summary) |Get |analytics/dispatch-summary  |None |None |dispatch details |200 |
-| 8 | Add data manually (e.g. create a dispatch batch and assign packages) |Post |/dispatch-batches  |None |vehicle,destination,package_id |create batch details |201 |
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
 
-> **Your task:** Complete the table before you start building. For each API, decide the HTTP method, endpoint path, path and query parameters, request body, response body, and status codes — including error cases (e.g. package not found, deleting a dispatched package).
+### 4. Run the server
 
-> **Note:** To have data to work with, your app needs an endpoint to add data manually (row 8) — the other requirements only cover viewing dispatch batches, not creating them.
+```bash
+python -m uvicorn main:app --reload
+```
 
-## 5. Scope
+Open the interactive docs at http://127.0.0.1:8000/docs
 
-The application will focus on warehouse package management and dispatch visibility.
+## Endpoints
 
-The following are **outside the scope**:
+| # | Action | Method | Endpoint | Success |
+|---|---|---|---|---|
+| 1 | Create a todo | `POST` | `/todos` | 201 |
+| 2 | Read all todos | `GET` | `/todos` | 200 |
+| 3 | Update a todo (partial) | `PATCH` | `/todos/{todo_id}` | 200 |
+| 4 | Delete a todo | `DELETE` | `/todos/{todo_id}` | 200 |
 
-- User authentication and authorization.
-- Live vehicle tracking.
-- Route optimization.
-- Payment processing.
-- External logistics integrations.
+### `POST /todos` — Create a todo
 
-## 6. Technology Stack
+| Field | Type | Rules | Meaning |
+|---|---|---|---|
+| `title` | string | required, 1 – 200 chars | What needs doing |
+| `description` | string | optional, max 1000 chars | Extra detail |
+| `completed` | boolean | optional, default `false` | Whether it's done |
 
-| Area | Technology |
-| --- | --- |
-| Backend | Python + FastAPI |
-| Database | PostgreSQL |
-| API Documentation | Swagger UI |
-| API Testing | Postman |
+```json
+// request
+{"title": "Buy milk", "description": "2 litres"}
 
-## 7. Expected Outcome
+// response (201)
+{"id": 1, "title": "Buy milk", "description": "2 litres", "completed": false}
+```
 
-A working REST API application that allows warehouse staff to manage packages, view dispatch batches, filter records and generate basic warehouse statistics.
+### `GET /todos` — Read all todos
+
+Returns every todo, ordered by `id`.
+
+```json
+// response (200)
+[
+  {"id": 1, "title": "Buy milk", "description": "2 litres", "completed": false},
+  {"id": 2, "title": "Gym", "description": null, "completed": true}
+]
+```
+
+### `PATCH /todos/{todo_id}` — Update a todo
+
+Send only the fields you want to change (`title`, `description`, `completed`).
+
+```json
+// request  PATCH /todos/1
+{"completed": true}
+
+// response (200)
+{"id": 1, "title": "Buy milk", "description": "2 litres", "completed": true}
+```
+
+- **404** if the todo doesn't exist
+- **422** if the body is empty (`"Nothing to update"`) or a field is invalid
+
+### `DELETE /todos/{todo_id}` — Delete a todo
+
+```json
+// response (200)
+{"message": "Todo deleted"}
+```
+
+- **404** if the todo doesn't exist
+
+Invalid input (for example an empty `title`) is rejected with HTTP **422** and a message naming the bad field.
+
+## Run with Docker
+
+```bash
+docker build -t todo-list .
+docker run -p 8000:8000 todo-list
+```
+
+The SQLite file lives inside the container, so todos are lost when the container is removed.
