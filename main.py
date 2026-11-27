@@ -34,7 +34,7 @@ def hello():
 
 
 # ---------- Todos ----------
-@app.post("/todos", response_model=TodoResponse, status_code=201)
+@app.post("/createtodos", response_model=TodoResponse, status_code=201)
 def create_todo(data: TodoCreate):
     return functions.create_todo(title=data.title, description=data.description, completed=data.completed)
 
